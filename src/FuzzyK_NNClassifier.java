@@ -19,13 +19,15 @@ public class FuzzyK_NNClassifier {
     int k;
 
     public static void main(String[] args) {
-//        System.out.println("How much of the data to use for testing? (value between 0% and 99%)");
-//        Scanner kb= new Scanner(System.in);
-//        double testing = (double)kb.nextInt()/100;
-//
-//        System.out.println("Input the k: ");
-//        int k=kb.nextInt();
-        FuzzyK_NNClassifier classifier = new FuzzyK_NNClassifier("//Users//Technoligest//Documents//Classes//Current//CSCI4144//Assignments//knearestneighbout//iris.data", 99.5 / 100, 20);
+
+        System.out.println("How much of the data to use for testing? (value between 0% and 99%)");
+        Scanner kb= new Scanner(System.in);
+        double testing = (double)kb.nextInt()/100;
+
+        System.out.println("Input the k: ");
+        int k=kb.nextInt();
+
+        FuzzyK_NNClassifier classifier = new FuzzyK_NNClassifier("iris.data", testing, k);
 
     }
 
@@ -38,12 +40,11 @@ public class FuzzyK_NNClassifier {
         testingData = new ArrayList<>();
         this.k = k;
         try {
+
             List<Row> rows = CSVReader.read(new Scanner(new File(fileName)));
             rows = normalizeData(rows);
 
             int forTesting = (int) (testing * rows.size());
-            System.out.println(rows.size());
-            System.out.println(forTesting);
             for (int i = 0; i < forTesting; ++i) {
                 testingData.add(rows.get(0));
                 rows.remove(0);
@@ -81,8 +82,9 @@ public class FuzzyK_NNClassifier {
         double i = 0;
         for (Row row : testingData) {
             String oldTarget = row.target;
-            System.out.println(find_class(row).target+" "+oldTarget);
-            if (find_class(row).target.equals(oldTarget)) {
+            Row temp = find_class(row);
+//            System.out.println(row+"\n"++"\n");
+            if (temp.kNNRows.get(temp.kNNRows.size()-1).target.equals(oldTarget)) {
                 ++i;
             }
         }
@@ -99,14 +101,11 @@ public class FuzzyK_NNClassifier {
         if (rowList == null || rowList.size() < 1) {
             return;
         }
-        min = new ArrayList<>();
-        max = new ArrayList<>();
-        for (int i = 0; i < rowList.get(0).data.size(); ++i) {
-            min.add(rowList.get(0).data.get(i));
-            max.add(rowList.get(0).data.get(i));
-        }
-        for (int i = 1; i < rowList.size(); i++) {
-            for (int j = 0; j < rowList.get(i).data.size(); j++) {
+        min = new ArrayList<>(rowList.get(0).data);
+        max = new ArrayList<>(rowList.get(0).data);
+
+        for (int i = 1; i < rowList.size(); ++i) {
+            for (int j = 0; j < rowList.get(i).data.size(); ++j) {
                 if (max.get(j) < rowList.get(i).data.get(j))
                     max.set(j, rowList.get(i).data.get(j));
                 if (min.get(j) > rowList.get(i).data.get(j))
@@ -240,7 +239,7 @@ public class FuzzyK_NNClassifier {
      */
     public static double getDistance(Row row1, Row row2) {
         double distance = 0;
-        for (int i = 0; i < row1.data.size(); i++) {
+        for (int i = 0; i < row1.data.size(); ++i) {
             distance += Math.pow((row1.data.get(i) - row2.data.get(i)), 2);
         }
         return distance;

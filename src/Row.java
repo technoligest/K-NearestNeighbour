@@ -16,4 +16,8 @@ public class Row {
     public Row(ArrayList<Double> data){
         this.data=data;
     }
+    public String toString(){
+
+        return data.toString()+" targe: "+target;
+    }
 }
