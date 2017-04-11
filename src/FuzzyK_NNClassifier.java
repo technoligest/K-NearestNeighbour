@@ -20,14 +20,17 @@ public class FuzzyK_NNClassifier {
 
     public static void main(String[] args) {
 
-        System.out.println("How much of the data to use for testing? (value between 0% and 99%)");
         Scanner kb= new Scanner(System.in);
+        System.out.println("Please input the fileName: ");
+        String fileName=kb.next();
+        System.out.println("How much of the data to use for testing? (value between 0% and 99%)");
+
         double testing = (double)kb.nextInt()/100;
 
         System.out.println("Input the k: ");
         int k=kb.nextInt();
 
-        FuzzyK_NNClassifier classifier = new FuzzyK_NNClassifier("iris.data", testing, k);
+        FuzzyK_NNClassifier classifier = new FuzzyK_NNClassifier(fileName, testing, k);
 
     }
 
