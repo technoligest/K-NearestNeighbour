@@ -3,6 +3,12 @@
  * 
  */
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +16,37 @@ import java.util.Scanner;
 
 public class CSVReader {
 
+
+    public static void main(String[]args) throws Exception{
+        List<Row > data =  read(new Scanner(new File("iris.data")));
+        for(int i=data.size()-1; i>=0 ; --i){
+            int temp = (int)(Math.random()*i);
+            System.out.println(temp);
+            data.add(data.remove(temp));
+        }
+        writeData(data);
+    }
+    /**
+     * Given a list of rows, print it out
+     *
+     * @param rowList
+     */
+    public static void writeData(List<Row> rowList) {
+        try {
+            FileWriter writer = new FileWriter("preProssedData.txt", false);
+            PrintWriter printWriter = new PrintWriter(writer);
+            NumberFormat formatter = new DecimalFormat("#0.00");
+            for (int i = 0; i < rowList.size(); i++) {
+                for (int j = 0; j < rowList.get(i).data.size(); ++j) {
+                    printWriter.print(rowList.get(i).data.get(j) + ",");
+                }
+                printWriter.println(rowList.get(i).target);
+            }
+            printWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     //WHATEVER has to be replaced with whatever object ot store the database
     public static List<Row> read(Scanner kb) {

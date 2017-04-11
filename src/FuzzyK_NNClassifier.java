@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class FuzzyK_NNClassifier {
     static List<Double> max; //the maximum value in each column of the data is stored in the respective position
     private List<Row> trainingData;
     private List<Row> testingData;
+    private List<Row> originalData;
     int k;
 
     public static void main(String[] args) {
@@ -26,12 +28,18 @@ public class FuzzyK_NNClassifier {
         System.out.println("How much of the data to use for testing? (value between 0% and 99%)");
 
         double testing = (double)kb.nextInt()/100;
+        FuzzyK_NNClassifier classifier;
 
         System.out.println("Input the k: ");
         int k=kb.nextInt();
 
-        FuzzyK_NNClassifier classifier = new FuzzyK_NNClassifier(fileName, testing, k);
-
+        classifier = new FuzzyK_NNClassifier(fileName, testing, k);
+//        for(int i=1;i<100;++i) {
+//            for (int j = 0; j < 40; ++j) {
+//                classifier = new FuzzyK_NNClassifier(fileName, i, j);
+//            }
+//            System.out.println();
+//        }
     }
 
     /**
@@ -45,6 +53,7 @@ public class FuzzyK_NNClassifier {
         try {
 
             List<Row> rows = CSVReader.read(new Scanner(new File(fileName)));
+            originalData= CSVReader.read(new Scanner(new File(fileName)));
             rows = normalizeData(rows);
 
             int forTesting = (int) (testing * rows.size());
@@ -53,24 +62,24 @@ public class FuzzyK_NNClassifier {
                 rows.remove(0);
             }
             trainingData = rows;
-            writeData(testingData);
+            CSVReader.writeData(testingData);
 
             System.out.println("Testing data size: " + testingData.size());
             System.out.println("Training data size: " + trainingData.size());
 
-            System.out.println(trainAndTest());
+            System.out.println("The percentatge of data that passed: "+trainAndTest());
 
 
-            ArrayList<Double> doubles = new ArrayList<>();
-            doubles.add(5.1);
-            doubles.add(3.0);
-            doubles.add(1.4);
-            doubles.add(0.2);
+//            ArrayList<Double> doubles = new ArrayList<>();
+//            doubles.add(5.1);
+//            doubles.add(3.0);
+//            doubles.add(1.4);
+//            doubles.add(0.2);
+//
+//            Row x = normalizeRow(new Row(doubles));
 
-            Row x = normalizeRow(new Row(doubles));
 
-
-            findTarget(find_class(x));
+//            findTarget(find_class(x));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,15 +92,17 @@ public class FuzzyK_NNClassifier {
      */
     public double trainAndTest() {
         double i = 0;
-        for (Row row : testingData) {
+        for (int k=0; k<testingData.size(); ++k ) {
+            Row row=testingData.get(k);
             String oldTarget = row.target;
             Row temp = find_class(row);
-//            System.out.println(row+"\n"++"\n");
+            System.out.println(originalData.get(k).data);
+            findTarget(temp);
             if (temp.kNNRows.get(temp.kNNRows.size()-1).target.equals(oldTarget)) {
                 ++i;
             }
+            System.out.println();
         }
-        System.out.println("i "+i);
         return i / testingData.size();
     }
 
@@ -138,27 +149,7 @@ public class FuzzyK_NNClassifier {
         return r;
     }
 
-    /**
-     * Given a list of rows, print it out
-     *
-     * @param rowList
-     */
-    public static void writeData(List<Row> rowList) {
-        try {
-            FileWriter writer = new FileWriter("preProssedData.txt", false);
-            PrintWriter printWriter = new PrintWriter(writer);
-            NumberFormat formatter = new DecimalFormat("#0.00");
-            for (int i = 0; i < rowList.size(); i++) {
-                for (int j = 0; j < rowList.get(i).data.size(); ++j) {
-                    printWriter.print(rowList.get(i).data.get(j) + ",");
-                }
-                printWriter.println(rowList.get(i).target);
-            }
-            printWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     /**
      * @param x the unlabeled row

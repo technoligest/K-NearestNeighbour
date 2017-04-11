@@ -13,6 +13,10 @@ public class Row {
         this.data=data;
         this.target=target;
     }
+    public Row(Row n){
+        this.data=n.data;
+        this.target=n.target;
+    }
     public Row(ArrayList<Double> data){
         this.data=data;
     }
